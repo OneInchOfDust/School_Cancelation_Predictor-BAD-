@@ -1,0 +1,128 @@
+import pandas as pd
+import numpy as np
+
+# reading dataset and adding labels
+df = pd.read_csv("Winter_Astana_Weather_2026.csv")
+df["label"] = [
+    "WASNOT",  # 01.12
+    "WASNOT",  # 02.12
+    "WASNOT",  # 03.12
+    "WASNOT",  # 04.12
+    "WASNOT",  # 05.12
+    "0-11",    # 06.12
+    "WASNOT",  # 07.12
+    "WASNOT",  # 08.12
+    "0-4",     # 09.12
+    "WASNOT",  # 10.12
+    "0-4",     # 11.12
+    "WASNOT",  # 12.12
+    "WASNOT",  # 13.12
+    "WASNOT",  # 14.12
+    "WASNOT",  # 15.12
+    "WASNOT",  # 16.12
+    "0-6",     # 17.12
+    "WASNOT",  # 18.12
+    "WASNOT",  # 19.12
+    "WASNOT",  # 20.12
+    "WASNOT",  # 21.12
+    "WASNOT",  # 22.12
+    "WASNOT",  # 23.12
+    "WASNOT",  # 24.12
+    "WASNOT",  # 25.12
+    "WASNOT",  # 26.12
+    "WASNOT",  # 27.12
+    "WASNOT",  # 28.12
+    "WASNOT",  # 29.12
+    "WASNOT",  # 30.12
+    "WASNOT",  # 31.12
+    "WASNOT",  # 01.01
+    "WASNOT",  # 02.01
+    "WASNOT",  # 03.01
+    "WASNOT",  # 04.01
+    "WASNOT",  # 05.01
+    "WASNOT",  # 06.01
+    "WASNOT",  # 07.01
+    "WASNOT",  # 08.01
+    "WASNOT",  # 09.01
+    "WASNOT",  # 10.01
+    "WASNOT",  # 11.01
+    "WASNOT",  # 12.01
+    "WASNOT",  # 13.01
+    "0-4",     # 14.01
+    "0-11",    # 15.01
+    "0-11",    # 16.01
+    "WASNOT",  # 17.01
+    "WASNOT",  # 18.01
+    "WASNOT",  # 19.01
+    "WASNOT",  # 20.01
+    "WASNOT",  # 21.01
+    "WASNOT",  # 22.01
+    "0-4",     # 23.01
+    "WASNOT",  # 24.01
+    "WASNOT",  # 25.01
+    "WASNOT",  # 26.01
+    "WASNOT",  # 27.01
+    "0-6",     # 28.01
+    "WASNOT",  # 29.01
+    "WASNOT",  # 30.01
+    "WASNOT",  # 31.01
+    "WASNOT",  # 01.02
+    "WASNOT",  # 02.02
+    "WASNOT",  # 03.02
+    "WASNOT",  # 04.02
+    "0-9",     # 05.02
+    "0-9",     # 06.02
+    "WASNOT",  # 07.02
+    "WASNOT",  # 08.02
+    "WASNOT",  # 09.02
+    "WASNOT",  # 10.02
+    "0-11",    # 11.02
+    "WASNOT",  # 12.02
+    "0-6",     # 13.02
+    "WASNOT",  # 14.02
+    "WASNOT",  # 15.02
+    "WASNOT",  # 16.02
+    "WASNOT",  # 17.02
+    "WASNOT",  # 18.02
+    "WASNOT",  # 19.02
+    "WASNOT",  # 20.02
+    "WASNOT",  # 21.02
+    "WASNOT",  # 22.02
+    "0-4",     # 23.02
+    "0-9",    # 24.02
+    "0-9",     # 25.02
+]
+
+# Model
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+
+X = df[features]
+y = df["label"]
+
+model = RandomForestClassifier()
+pipe = Pipeline([
+    ('scaler', StandardScaler()),
+    ('mdoel', model)
+])
+
+pipe.fit(X, y)
+importances = pipe.named_steps['mdoel'].feature_importances_
+print(pd.Series(importances, index=features).sort_values(ascending=False)) # importances of the features
+
+# input your data and get prediction
+new_data = pd.DataFrame([{
+    'tempmax': float(input()),
+    'tempmin': float(input()),
+    'feelslike': float(input()),
+    'humidity': float(input()),
+    'windspeed': float(input())
+}])
+pred = pipe.predict(new_data)
+
+proba = pipe.predict_proba(new_data)
+classes = pipe.classes_  # ['0-11', '0-4', '0-6', '0-9', 'WASNOT']
+
+for cls, p in zip(classes, proba[0]):
+    print(f"{cls:>8}: {p*100:.1f}%")
